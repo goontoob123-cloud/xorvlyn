@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>i love femboys >w<</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    overflow:hidden;
+    touch-action:none;
+}
+
+/* BACKGROUND CANVAS */
+#bgCanvas{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+}
+
+/* BG COLOR LAYER */
+#bg{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+}
+
+/* INTRO */
+#intro{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    background:#0b0f1a;
+    color:white;
+    z-index:999;
+    cursor:pointer;
+    transition: opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease;
+}
+
+#intro h1{
+    font-size:2.5rem;
+    animation: float 2s ease-in-out infinite;
+}
+
+#intro p{
+    opacity:0.7;
+    margin-top:10px;
+}
+
+@keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-10px);}
+}
+
+/* SECTIONS */
+.section{
+    position:absolute;
+    width:100%;
+    height:100vh;
+    top:100%;
+    left:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    color:black;
+    opacity:0;
+    transition:all 0.6s ease-in-out;
+    padding:20px;
+    text-align:center;
+}
+
+.section.active{
+    top:0;
+    opacity:1;
+}
+
+/* NAV */
+#nav{
+    position:fixed;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:10;
+}
+
+.dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.4);
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.dot.active{
+    background:white;
+    transform:scale(1.4);
+}
+
+h1{font-size:2.5rem;margin-bottom:20px;}
+p{font-size:1.2rem;margin:4px 0;}
+</style>
+</head>
+
+<body>
+
+<!-- PARTICLES -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- BG COLOR -->
+<div id="bg"></div>
+
+<!-- INTRO -->
+<div id="intro">
+    <h1>click to enter :3</h1>
+    <p>warning: im a faggot!!!</p>
+</div>
+
+<!-- MUSIC -->
+<audio id="music" loop>
+    <source src="https://files.catbox.moe/tmjwr6.mp3" type="audio/mp3">
+</audio>
+
+<!-- NAV -->
+<div id="nav"></div>
+
+<!-- SECTIONS -->
+<div class="section active" data-color="#ff7df6">
+    <h1>haii, welcome to my bio!!!</h1>
+    <p>swipe or scroll to view more</p>
+</div>
+
+<div class="section" data-color="#00A86B">
+    <h1>my favorite color is</h1>
+    <p>Illuminating Emerald</p>
+</div>
+
+<div class="section" data-color="#9D81BA">
+    <h1>and my favorite color is</h1>
+    <p>Purple Mountains' Majesty</p>
+</div>
+
+<div class="section" data-color="#b8d5ff">
+    <h1>meh a faggot</h1>
+    <p>:3</p>
+</div>
+
+<div class="section" data-color="#ffa3fc">
+    <h1>more abt meh</h1>
+    <p>um im a gay femboy twink and i like boys duh :3 &lt;3</p>
+</div>
+
+<div class="section" data-color="#8ff9ff">
+    <h1>my birthdih is</h1>
+    <p>may 24th, 2012</p>
+</div>
+
+<div class="section" data-color="#42adff">
+    <h1>rah!!!!</h1>
+    <p>dats basically all!</p>
+</div>
+
+<script>
+const sections = document.querySelectorAll(".section");
+const bg = document.getElementById("bg");
+const nav = document.getElementById("nav");
+const intro = document.getElementById("intro");
+const music = document.getElementById("music");
+
+let current = 0;
+let scrolling = false;
+let started = false;
+
+/* NAV */
+sections.forEach((_, i)=>{
+    const d = document.createElement("div");
+    d.classList.add("dot");
+    if(i===0) d.classList.add("active");
+    d.onclick = ()=> started && goTo(i);
+    nav.appendChild(d);
+});
+
+const dots = document.querySelectorAll(".dot");
+
+function updateDots(){
+    dots.forEach((d,i)=>{
+        d.classList.toggle("active", i===current);
+    });
+}
+
+/* COLOR */
+function rgb(hex){
+    return {
+        r:parseInt(hex.substr(1,2),16),
+        g:parseInt(hex.substr(3,2),16),
+        b:parseInt(hex.substr(5,2),16)
+    };
+}
+
+function grad(a,b){
+    const c1=rgb(a), c2=rgb(b);
+    let start=null,d=600;
+
+    function anim(t){
+        if(!start)start=t;
+        let p=(t-start)/d;
+        if(p>1)p=1;
+
+        bg.style.background=`rgb(${
+            Math.round(c1.r+(c2.r-c1.r)*p)
+        },${
+            Math.round(c1.g+(c2.g-c1.g)*p)
+        },${
+            Math.round(c1.b+(c2.b-c1.b)*p)
+        })`;
+
+        if(p<1)requestAnimationFrame(anim);
+    }
+    requestAnimationFrame(anim);
+}
+
+/* NAV CHANGE */
+function goTo(i){
+    if(scrolling) return;
+    scrolling=true;
+
+    sections[current].classList.remove("active");
+    sections[i].classList.add("active");
+
+    grad(sections[current].dataset.color, sections[i].dataset.color);
+
+    current=i;
+    updateDots();
+
+    setTimeout(()=>scrolling=false,600);
+}
+
+/* SCROLL */
+window.addEventListener("wheel",(e)=>{
+    if(!started) return;
+    goTo(current + (e.deltaY>0?1:-1));
+});
+
+/* INTRO */
+intro.addEventListener("click",()=>{
+    intro.style.opacity="0";
+    intro.style.transform="scale(1.1)";
+    intro.style.filter="blur(10px)";
+
+    setTimeout(()=>{
+        intro.style.display="none";
+        started=true;
+
+        music.volume=0.4;
+        music.play().catch(()=>{});
+    },800);
+});
+
+/* PARTICLES */
+const canvas=document.getElementById("bgCanvas");
+const ctx=canvas.getContext("2d");
+
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let particles=[];
+
+for(let i=0;i<80;i++){
+    particles.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:Math.random()*2+1,
+        dx:(Math.random()-0.5)*0.5,
+        dy:(Math.random()-0.5)*0.5
+    });
+}
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle="rgba(255,255,255,0.6)";
+    particles.forEach(p=>{
+        p.x+=p.dx;
+        p.y+=p.dy;
+
+        if(p.x<0||p.x>canvas.width)p.dx*=-1;
+        if(p.y<0||p.y>canvas.height)p.dy*=-1;
+
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+}
+draw();
+
+window.addEventListener("resize",()=>{
+    canvas.width=innerWidth;
+    canvas.height=innerHeight;
+});
+</script>
+
+</body>
+</html>
